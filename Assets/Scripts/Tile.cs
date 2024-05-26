@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-
+using DG.Tweening;
 public class Tile : MonoBehaviour
 {
     private GridManager gridManager;
@@ -26,7 +26,7 @@ public class Tile : MonoBehaviour
     {
         if(piece.tileType == TileType.Normal)
         {
-            Debug.Log($"{x},{y}");
+           // Debug.Log($"{x},{y}");
             gridManager.ResetMatchTile();
             DestroyPieceInTile();
         }
@@ -74,67 +74,62 @@ public class Tile : MonoBehaviour
                 {
                     foundSameColorNeighbor = true;
                     gridManager.amoutToRemove++;
-                    gridManager.foundAnyMatch = true;
                     neighbors[i].isRemove = true;
                     neighbors[i].DestroyPieceInTile();
                     neighbors[i].piece.GetComponent<SpriteRenderer>().enabled = false;
                 }
-                else
-                    gridManager.foundAnyMatch = false;
             }
-            else
-                gridManager.foundAnyMatch = false;
         }
 
-        if (!foundSameColorNeighbor && !gridManager.CheckIfAnyMatchFound() && gridManager.amoutToRemove > 0)
+        if (!foundSameColorNeighbor && !gridManager.isExcuteTileShift && gridManager.amoutToRemove > 1)
         {
-            // gridManager.ShiftTilesDown();
-            StartCoroutine(test());
+            Debug.Log("Finish Remove");
+            gridManager.isExcuteTileShift = true;
+            StartCoroutine(DelayToShiftTileDown());
         }
+
     }
+
     public void GetAbovePieceTile()
     {
-        if(isRemove)
+        float moveTime = 0.5f;
+        while(isRemove)
         {
-            if (neighbors[3] && !neighbors[3].isRemove)
+            if (neighbors[3])
             {
-                Piece temp = piece;
-                piece = neighbors[3].piece;
-                neighbors[3].piece = temp;
+                if (!neighbors[3].isRemove)
+                {
+                    Piece temp = piece;
+                    piece = neighbors[3].piece;
+                    neighbors[3].piece = temp;
 
-                neighbors[3].isRemove = true;
+                    neighbors[3].isRemove = true;
+                    piece.transform.DOMove(transform.position, moveTime);
 
-                //piece.transform.position = transform.position;
-                //neighbors[3].piece.transform.position = neighbors[3].transform.position;
-                StartCoroutine(Lerp(piece.transform, transform.position, 1));
-
-                neighbors[3].piece.transform.position = new Vector3(x, gridManager.height + 1, 0);
-                neighbors[3].piece.GetComponent<SpriteRenderer>().enabled = true;
-                neighbors[3].piece.GetComponent<SpriteRenderer>().color = Color.black;
-                StartCoroutine(Lerp(neighbors[3].piece.transform, neighbors[3].transform.position, 1));
-
-                isRemove = false;
-
+                    neighbors[3].piece.transform.position = new Vector3(x, (gridManager.height + (neighbors[3].y)) , 0);
+                    neighbors[3].piece.GetComponent<SpriteRenderer>().enabled = true;
+                    neighbors[3].piece.color = gridManager.Colors[Random.Range(0,gridManager.Colors.Length)];
+                    neighbors[3].piece.GetComponent<SpriteRenderer>().color = neighbors[3].piece.color;
+                    neighbors[3].piece.transform.DOMove(neighbors[3].transform.position, moveTime);
+                    isRemove = false;
+                }
                 neighbors[3].GetAbovePieceTile();
             }
-            //Debug.Log($"{x},{y} is empty");
+            else
+            {
+                piece.transform.position = new Vector3(x, gridManager.height + y, 0);
+                piece.GetComponent<SpriteRenderer>().enabled = true;
+                piece.color = gridManager.Colors[Random.Range(0, gridManager.Colors.Length)];
+                piece.GetComponent<SpriteRenderer>().color = piece.color;
+                piece.transform.DOMove(transform.position, moveTime);
+
+                isRemove = false;
+            }
         }
     }
-    IEnumerator Lerp(Transform tilePos, Vector3 end, float duration)
+    IEnumerator DelayToShiftTileDown()
     {
-        float time = 0;
-        Vector3 start = tilePos.transform.position;
-        while (time < duration)
-        {
-            tilePos.position = Vector3.Lerp(start, end, time / duration);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        tilePos.position = end;
-    }
-    IEnumerator test()
-    {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
         gridManager.ShiftTilesDown();
     }
 }

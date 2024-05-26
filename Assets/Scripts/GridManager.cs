@@ -12,19 +12,19 @@ public class GridManager : MonoBehaviour
     private Color[] colors;
 
     public int amoutToRemove;
-    public bool foundAnyMatch;
+    public bool isExcuteTileShift;
 
     public void ResetMatchTile()
     {
-        foundAnyMatch = false;
+        isExcuteTileShift = false;
         amoutToRemove = 0;
     }
 
     public bool CheckIfAnyMatchFound()
     {
-        return foundAnyMatch;
+        return isExcuteTileShift;
     }
-
+    public Color[] Colors { get { return colors; } }
     void Start()
     {
         tiles = new Tile[width, height];
@@ -57,7 +57,6 @@ public class GridManager : MonoBehaviour
                 tiles[x, y].InitTile(this);
                 tiles[x, y].x = x;
                 tiles[x, y].y = y;
-                //tiles[x, y].color = colors[Random.RandomRange(0, colors.Length)];
             }
         }
         FindAllNeighbor();
@@ -93,54 +92,10 @@ public class GridManager : MonoBehaviour
 
         foreach (var tile in tiles)
         {
-            //tile.GetAbovePieceTile();
             if (tile.isRemove)
             {
-                //Debug.Log($"{tile.x},{tile.y} is empty");
                 tile.GetAbovePieceTile();
             }
         }
-
-        Debug.Log("ShiftTilesDown");
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (tiles[x, y].isRemove)
-                {
-                    // Find the first non-removed tile above the current tile
-                    for (int k = y; k > 0; k--)
-                    {
-                        //if (!tiles[x, k + 1].isRemove)
-                        //{
-                        //    Piece temp = tiles[x, k].piece;
-                        //    tiles[x, k].piece = tiles[x, k - 1].piece;
-                        //    tiles[x, k - 1].piece = temp;
-
-                        //    // Update their positions (if necessary)
-                        //    StartCoroutine(Lerp(tiles[x, k].piece.transform, tiles[x, k].transform.position, 1));
-                        //    StartCoroutine(Lerp(tiles[x , k - 1].piece.transform, tiles[x, k - 1].transform.position, 1));
-
-                        //   // tiles[x, k].piece.GetComponent<Renderer>().enabled = true;
-                        //   // tiles[x, k - 1].piece.GetComponent<Renderer>().enabled = true;
-                        //}
-                    }
-
-                }
-            }
-        }
-    }
-
-    IEnumerator Lerp(Transform tilePos, Vector3 end, float duration)
-    {
-        float time = 0;
-        Vector3 start = tilePos.transform.position;
-        while (time < duration)
-        {
-            tilePos.position = Vector3.Lerp(start, end, time / duration);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        tilePos.position = end;
     }
 }
