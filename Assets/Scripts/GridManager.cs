@@ -88,6 +88,30 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    public void RemovePieceByBomb(int x , int y)
+    {
+        foreach (var tile in tiles)
+        {
+            if(tile.x == x || tile.y == y)
+            {
+                tile.RemovePiece();
+            }
+        }
+        ShiftTilesDown();
+    }
+    public void RemovePieceByDisco(Color clr)
+    {
+        foreach (var tile in tiles)
+        {
+            if (tile.piece.color == clr)
+            {
+                tile.RemovePiece();
+            }
+        }
+        ShiftTilesDown();
+    }
+
     public void ShiftTilesDown()
     {
         //Piece[] TempPieces;

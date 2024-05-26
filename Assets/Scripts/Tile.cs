@@ -24,19 +24,19 @@ public class Tile : MonoBehaviour
     }
     public void OnMouseUp()
     {
-        if(piece.tileType == PieceType.Normal)
+        switch (piece.tileType)
         {
-            gridManager.ResetMatchTile();
-            gridManager.clickPieceColor = piece.color;
-            RemovePieceInTileAndCheckNeighbor();
-        }
-        if (piece.tileType == PieceType.Bomb)
-        {
-            Debug.Log($"Bomb Click : {x},{y}");
-        }
-        if (piece.tileType == PieceType.Disco)
-        {
-            Debug.Log($"Disco Click : {x},{y}");
+            case PieceType.Normal:
+                gridManager.ResetMatchTile();
+                gridManager.clickPieceColor = piece.color;
+                RemovePieceInTileAndCheckNeighbor();
+                break;
+            case PieceType.Bomb:
+                gridManager.RemovePieceByBomb(x, y);
+                break;
+            case PieceType.Disco:
+                gridManager.RemovePieceByDisco(piece.color);
+                break;
         }
     }
     public void FindNeighbor()

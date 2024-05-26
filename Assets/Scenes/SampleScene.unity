@@ -235,10 +235,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8559f0a5bb3c44845980cc079c6919c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 8
-  height: 8
+  width: 10
+  height: 10
   tilePrefab: {fileID: 5509813555769679004, guid: 322dc110188a1194dbb202701cef62dd, type: 3}
   peicePrefab: {fileID: 7989819217223542325, guid: 30952d48bef658a409b338cf0a215361, type: 3}
+  amoutToRemove: 0
+  isExcuteTileShift: 0
+  specialTypeToadd: 0
+  clickPieceColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1530202053
 Transform:
   m_ObjectHideFlags: 0
