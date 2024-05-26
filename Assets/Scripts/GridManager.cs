@@ -14,6 +14,8 @@ public class GridManager : MonoBehaviour
     public int amoutToRemove;
     public bool isExcuteTileShift;
 
+    public PieceType specialTypeToadd;
+    public Color clickPieceColor;
     public void ResetMatchTile()
     {
         isExcuteTileShift = false;
@@ -80,7 +82,7 @@ public class GridManager : MonoBehaviour
                 GameObject go = Instantiate(peicePrefab);
                 go.transform.parent = pieceHolder.transform;
                 Piece newPiece = go.GetComponent<Piece>();
-                newPiece.Init(TileType.Normal , colors[Random.Range(0,colors.Length)]);
+                newPiece.Init(PieceType.Normal , colors[Random.Range(0,colors.Length)]);
                 tiles[x, y].AddPeice(newPiece);
                 go.transform.position = tiles[x, y].transform.position;
             }
@@ -89,6 +91,17 @@ public class GridManager : MonoBehaviour
     public void ShiftTilesDown()
     {
         //Piece[] TempPieces;
+        specialTypeToadd  = PieceType.Normal;
+        if(amoutToRemove >= 6 && amoutToRemove < 10)
+        {
+            specialTypeToadd = PieceType.Bomb;
+            Debug.Log("bomb");
+        }
+        else if(amoutToRemove >= 10)
+        {
+            specialTypeToadd = PieceType.Disco;
+            Debug.Log("Disco");
+        }
 
         foreach (var tile in tiles)
         {

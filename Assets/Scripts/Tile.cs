@@ -24,15 +24,19 @@ public class Tile : MonoBehaviour
     }
     public void OnMouseUp()
     {
-        if(piece.tileType == TileType.Normal)
+        if(piece.tileType == PieceType.Normal)
         {
-           // Debug.Log($"{x},{y}");
             gridManager.ResetMatchTile();
-            DestroyPieceInTile();
+            gridManager.clickPieceColor = piece.color;
+            RemovePieceInTileAndCheckNeighbor();
         }
-        else
+        if (piece.tileType == PieceType.Bomb)
         {
-            Debug.Log($"something wrong : {x},{y}");
+            Debug.Log($"Bomb Click : {x},{y}");
+        }
+        if (piece.tileType == PieceType.Disco)
+        {
+            Debug.Log($"Disco Click : {x},{y}");
         }
     }
     public void FindNeighbor()
@@ -61,7 +65,12 @@ public class Tile : MonoBehaviour
             neighbors[3] = gridManager.tiles[x, y + 1];
         }
     }
-    public void DestroyPieceInTile()
+    public void RemovePiece()
+    {
+        isRemove = true;
+        piece.EnablePiece(false);
+    }
+    public void RemovePieceInTileAndCheckNeighbor()
     {
         bool foundSameColorNeighbor = false;
 
@@ -74,16 +83,14 @@ public class Tile : MonoBehaviour
                 {
                     foundSameColorNeighbor = true;
                     gridManager.amoutToRemove++;
-                    neighbors[i].isRemove = true;
-                    neighbors[i].DestroyPieceInTile();
-                    neighbors[i].piece.GetComponent<SpriteRenderer>().enabled = false;
+                    neighbors[i].RemovePiece();
+                    neighbors[i].RemovePieceInTileAndCheckNeighbor();
                 }
             }
         }
 
-        if (!foundSameColorNeighbor && !gridManager.isExcuteTileShift && gridManager.amoutToRemove > 1)
+        if (!foundSameColorNeighbor && !gridManager.isExcuteTileShift)
         {
-            Debug.Log("Finish Remove");
             gridManager.isExcuteTileShift = true;
             StartCoroutine(DelayToShiftTileDown());
         }
@@ -107,9 +114,9 @@ public class Tile : MonoBehaviour
                     piece.transform.DOMove(transform.position, moveTime);
 
                     neighbors[3].piece.transform.position = new Vector3(x, (gridManager.height + (neighbors[3].y)) , 0);
-                    neighbors[3].piece.GetComponent<SpriteRenderer>().enabled = true;
+                    neighbors[3].piece.EnablePiece(true);
                     neighbors[3].piece.color = gridManager.Colors[Random.Range(0,gridManager.Colors.Length)];
-                    neighbors[3].piece.GetComponent<SpriteRenderer>().color = neighbors[3].piece.color;
+                    neighbors[3].piece.SetPieceType(neighbors[3].piece.tileType, neighbors[3].piece.color);
                     neighbors[3].piece.transform.DOMove(neighbors[3].transform.position, moveTime);
                     isRemove = false;
                 }
@@ -117,13 +124,51 @@ public class Tile : MonoBehaviour
             }
             else
             {
+
                 piece.transform.position = new Vector3(x, gridManager.height + y, 0);
-                piece.GetComponent<SpriteRenderer>().enabled = true;
-                piece.color = gridManager.Colors[Random.Range(0, gridManager.Colors.Length)];
-                piece.GetComponent<SpriteRenderer>().color = piece.color;
+                piece.EnablePiece(true);
+
+
+                if(gridManager.specialTypeToadd == PieceType.Normal)
+                {
+                    piece.SetPieceType(PieceType.Normal, gridManager.Colors[Random.Range(0, gridManager.Colors.Length)]);
+                }
+                if (gridManager.specialTypeToadd == PieceType.Bomb)
+                {
+                    //For random special piece position
+                    int rand = Random.Range(0, gridManager.amoutToRemove);
+                    if(rand == 0)
+                    {
+                        piece.SetPieceType(PieceType.Bomb, gridManager.Colors[Random.Range(0, gridManager.Colors.Length)]);
+                        gridManager.specialTypeToadd = PieceType.Normal;
+                    }
+                    else
+                    {
+                        piece.SetPieceType(PieceType.Normal, gridManager.Colors[Random.Range(0, gridManager.Colors.Length)]);
+                    }
+                }
+                if (gridManager.specialTypeToadd == PieceType.Disco)
+                {
+                    //For random special piece position
+                    int rand = Random.Range(0, gridManager.amoutToRemove);
+                    if(rand == 0)
+                    {
+                        piece.SetPieceType(PieceType.Disco, gridManager.clickPieceColor);
+                        gridManager.specialTypeToadd = PieceType.Normal;
+                    }
+                    else
+                    {
+                        piece.SetPieceType(PieceType.Normal, gridManager.Colors[Random.Range(0, gridManager.Colors.Length)]);
+                    }
+                }
+
+                gridManager.amoutToRemove--;
+
                 piece.transform.DOMove(transform.position, moveTime);
 
                 isRemove = false;
+
+                //Debug.Log($"Create new piece");
             }
         }
     }
