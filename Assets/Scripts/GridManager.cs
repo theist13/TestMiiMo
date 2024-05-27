@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,12 @@ public class GridManager : MonoBehaviour
     public Tile[,] tiles;
     private Color[] colors;
 
-    public int amoutToRemove;
+    public int normalAmoutToRemove;
+    private int bombAmountToRemove;
+    private int discoAmoutToRemove;
+
+    public Action<int> OnAddScore;
+
     public bool isExcuteTileShift;
 
     public PieceType specialTypeToadd;
@@ -19,7 +25,9 @@ public class GridManager : MonoBehaviour
     public void ResetMatchTile()
     {
         isExcuteTileShift = false;
-        amoutToRemove = 0;
+        normalAmoutToRemove = 0;
+        bombAmountToRemove = 0;
+        discoAmoutToRemove = 0;
     }
 
     public bool CheckIfAnyMatchFound()
@@ -27,22 +35,14 @@ public class GridManager : MonoBehaviour
         return isExcuteTileShift;
     }
     public Color[] Colors { get { return colors; } }
-    void Start()
+    public void Init()
     {
         tiles = new Tile[width, height];
         InitializeBoard();
     }
 
-    void Update()
-    {
-        
-    }
     private void InitializeBoard()
     {
-        //SetMainCameraPosition
-        Camera.main.transform.position = new Vector3(width / 2, height / 2, -10);
-        Camera.main.orthographicSize = (width + height) / 2;
-
         colors = new Color[] { Color.red , Color.green ,Color.blue , Color.yellow };
         GameObject gridHolder = new GameObject("Grid Holder");
         gridHolder.transform.parent = transform;
@@ -82,7 +82,7 @@ public class GridManager : MonoBehaviour
                 GameObject go = Instantiate(peicePrefab);
                 go.transform.parent = pieceHolder.transform;
                 Piece newPiece = go.GetComponent<Piece>();
-                newPiece.Init(PieceType.Normal , colors[Random.Range(0,colors.Length)]);
+                newPiece.Init(PieceType.Normal, colors[UnityEngine.Random.Range(0, colors.Length)]);
                 tiles[x, y].AddPeice(newPiece);
                 go.transform.position = tiles[x, y].transform.position;
             }
@@ -96,6 +96,7 @@ public class GridManager : MonoBehaviour
             if(tile.x == x || tile.y == y)
             {
                 tile.RemovePiece();
+                bombAmountToRemove++;
             }
         }
         ShiftTilesDown();
@@ -107,6 +108,7 @@ public class GridManager : MonoBehaviour
             if (tile.piece.color == clr)
             {
                 tile.RemovePiece();
+                discoAmoutToRemove++;
             }
         }
         ShiftTilesDown();
@@ -114,19 +116,25 @@ public class GridManager : MonoBehaviour
 
     public void ShiftTilesDown()
     {
-        //Piece[] TempPieces;
         specialTypeToadd  = PieceType.Normal;
-        if(amoutToRemove >= 6 && amoutToRemove < 10)
+
+        //Adding special piece
+        if(normalAmoutToRemove >= 6 && normalAmoutToRemove < 10)
         {
             specialTypeToadd = PieceType.Bomb;
             Debug.Log("bomb");
         }
-        else if(amoutToRemove >= 10)
+        else if(normalAmoutToRemove >= 10)
         {
             specialTypeToadd = PieceType.Disco;
             Debug.Log("Disco");
         }
 
+        int score = normalAmoutToRemove * 100;
+        score += bombAmountToRemove * 200;
+        score += discoAmoutToRemove * 200;
+
+        OnAddScore?.Invoke(score);
         foreach (var tile in tiles)
         {
             if (tile.isRemove)

@@ -82,7 +82,7 @@ public class Tile : MonoBehaviour
                 if (!neighbors[i].isRemove)
                 {
                     foundSameColorNeighbor = true;
-                    gridManager.amoutToRemove++;
+                    gridManager.normalAmoutToRemove++;
                     neighbors[i].RemovePiece();
                     neighbors[i].RemovePieceInTileAndCheckNeighbor();
                 }
@@ -136,7 +136,7 @@ public class Tile : MonoBehaviour
                 if (gridManager.specialTypeToadd == PieceType.Bomb)
                 {
                     //For random special piece position
-                    int rand = Random.Range(0, gridManager.amoutToRemove);
+                    int rand = Random.Range(0, gridManager.normalAmoutToRemove);
                     if(rand == 0)
                     {
                         piece.SetPieceType(PieceType.Bomb, gridManager.Colors[Random.Range(0, gridManager.Colors.Length)]);
@@ -150,7 +150,7 @@ public class Tile : MonoBehaviour
                 if (gridManager.specialTypeToadd == PieceType.Disco)
                 {
                     //For random special piece position
-                    int rand = Random.Range(0, gridManager.amoutToRemove);
+                    int rand = Random.Range(0, gridManager.normalAmoutToRemove);
                     if(rand == 0)
                     {
                         piece.SetPieceType(PieceType.Disco, gridManager.clickPieceColor);
@@ -162,7 +162,7 @@ public class Tile : MonoBehaviour
                     }
                 }
 
-                gridManager.amoutToRemove--;
+                gridManager.normalAmoutToRemove--;
 
                 piece.transform.DOMove(transform.position, moveTime);
 
