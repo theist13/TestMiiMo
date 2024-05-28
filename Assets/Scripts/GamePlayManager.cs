@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GamePlayManager : MonoBehaviour
@@ -13,11 +11,5 @@ public class GamePlayManager : MonoBehaviour
         responsiveCamera.Init(gridManager);
         gridManager.Init();
         gridManager.OnAddScore += scoreManager.AddScore;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

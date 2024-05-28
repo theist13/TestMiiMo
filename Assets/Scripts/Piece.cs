@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum PieceType
@@ -10,7 +8,7 @@ public enum PieceType
 }
 public class Piece : MonoBehaviour
 {
-    public PieceType tileType; // Enum for different tile types
+    public PieceType tileType; 
     public Color color;
     [SerializeField]private SpriteRenderer normalPiece;
     [SerializeField]private SpriteRenderer specialPiece;
@@ -20,9 +18,7 @@ public class Piece : MonoBehaviour
         tileType = type;
         color = clr;
 
-        //normalPiece = GetComponent<SpriteRenderer>();
         normalPiece.color = color;
-        //specialPiece = GetComponentInChildren<SpriteRenderer>();
         specialPiece.enabled = false;
     }
 
@@ -35,16 +31,13 @@ public class Piece : MonoBehaviour
             case PieceType.Normal:
                 normalPiece.color = clr;
                 specialPiece.enabled = false;
-                //Debug.Log("Set this to normal");
                 break;
             case PieceType.Bomb:
-                Debug.Log("Set this to bomb");
                 normalPiece.color = clr;
                 specialPiece.enabled = true;
                 specialPiece.color = Color.white;
                 break; 
             case PieceType.Disco:
-                Debug.Log("Set this to disco");
                 normalPiece.color = Color.black;
                 specialPiece.enabled = true;
                 specialPiece.color = clr;
